@@ -140,39 +140,39 @@ def view_all():
             
 def view_mine():
     
-        task_selection_operation_list = []
+        task_selection_list_for_operation = []
         list_of_assigned_tasks = []
-        w = 0
+        counter_for_assigned_tasks = 0
         for t in task_list:
             if t['username'] == curr_user:
-                w+=1
-                disp_str = f"Task {w}: \t {t['title']}\n"
+                counter_for_assigned_tasks+=1
+                disp_str = f"Task {counter_for_assigned_tasks}: \t {t['title']}\n"
                 disp_str += f"Assigned to: \t {t['username']}\n"
                 disp_str += f"Date Assigned: \t {t['assigned_date'].strftime(DATETIME_STRING_FORMAT)}\n"
                 disp_str += f"Due Date: \t {t['due_date'].strftime(DATETIME_STRING_FORMAT)}\n"
                 disp_str += f"Task Description: \n {t['description']}\n"
                 print(disp_str)
-                task_selection_operation_list.append(disp_str)
+                task_selection_list_for_operation.append(disp_str)
                 list_of_assigned_tasks.append(t)
         
         task_selection = int(input("Enter the number of a task to edit or mark as complete, or enter '-1' to return to the main menu:\n "))
         if task_selection == int(-1):
-            print(task_selection_operation_list)
+         print(menu)
         else:
-            selected_option = int(task_selection - int(1))
-            if selected_option >= len(task_selection_operation_list):
+            user_selected_option = int(task_selection - int(1))
+            if user_selected_option >= len(task_selection_list_for_operation):
                 print("That task does not exist.")
                 exit()
             else:
              print("\n")
-             print(task_selection_operation_list[selected_option])
+             print(task_selection_list_for_operation[user_selected_option])
              print("\n")
              edit_or_complete_input = input("Would you like to edit this task ('e'), or mark as completed ('c')? \n")
              if edit_or_complete_input.lower() == 'e':
                         with open("tasks.txt", 'r') as task_file:
                               task_data = task_file.read().split("\n") 
                               for t in task_data:
-                                   edit_selected_task = task_data[selected_option]
+                                   edit_selected_task = task_data[user_selected_option]
                                    edit_task_components = edit_selected_task.split(";")
                                    if edit_task_components[5] == "Yes":
                                         print("This task has already been completed.")
@@ -181,11 +181,11 @@ def view_mine():
                         if username_or_due_date.lower() == 'u':
                          with open("tasks.txt", 'r') as task_file:
                               task_data = task_file.read().split("\n")
-                              edit_selected_task = task_data[selected_option]
+                              edit_selected_task = task_data[user_selected_option]
                               edit_task_components = edit_selected_task.split(";")
                               changed_username = input("Change the name of person assigned to task: ")
                               edit_task_components[0] = changed_username
-                              task_data[selected_option] = ";".join(edit_task_components)
+                              task_data[user_selected_option] = ";".join(edit_task_components)
                         with open("tasks.txt", "w") as task_file:
                          for t in task_data:
                              task_list_str = str(t)
@@ -194,11 +194,11 @@ def view_mine():
                          if username_or_due_date == 'd':
                           with open("tasks.txt", 'r') as task_file:
                            task_data = task_file.read().split("\n")
-                           edit_selected_task = task_data[selected_option]
+                           edit_selected_task = task_data[user_selected_option]
                            edit_task_components = edit_selected_task.split(";")
                            task_due_date = input("Due date of task (YYYY-MM-DD): ")
                            edit_task_components[3] = task_due_date
-                           task_data[selected_option] = ";".join(edit_task_components)
+                           task_data[user_selected_option] = ";".join(edit_task_components)
                            with open("tasks.txt", "w") as task_file:
                             for t in task_data:
                              task_list_str = str(t)
@@ -209,24 +209,20 @@ def view_mine():
              if edit_or_complete_input.lower() == 'c':
               with open("tasks.txt", 'r') as task_file:
                task_data = task_file.read().split("\n")
-              edit_task_components_list = []
+              list_to_edit_task_components = []
               for t in task_data:
                 edit_task_components = t.split(';')
-                edit_task_components_list.append(edit_task_components)
-              print(edit_task_components_list)
-              edit_task_components_list_for_user = [e for e in edit_task_components_list if e[0] == curr_user]
-              task_selected_to_complete = edit_task_components_list_for_user[selected_option]
+                list_to_edit_task_components.append(edit_task_components)
+              edit_task_components_list_for_user = [e for e in list_to_edit_task_components if e[0] == curr_user]
+              task_selected_to_complete = edit_task_components_list_for_user[user_selected_option]
               task_selected_to_complete[5] = 'Yes'
-              for e in edit_task_components_list:
+              for e in list_to_edit_task_components:
                   if e[2] == task_selected_to_complete[2]:
                     e = task_selected_to_complete
-              print(edit_task_components_list)
-              print(task_data)
               with open("tasks.txt", "w") as task_file:
-                         for e in edit_task_components_list:
+                         for e in list_to_edit_task_components:
                              joined_tasks = ";".join(e)
                              str_joined_tasks = str(joined_tasks)
-                             print(str_joined_tasks)
                              task_file.write(str_joined_tasks)
                              task_file.write("\n")
             print("\n", "Task completed.")               
@@ -237,10 +233,10 @@ def generate_reports():
          task_data = task_file.read().split("\n")
          joined_tasks = ";".join(task_data)
          full_task_list = joined_tasks.split(";")
-        date_comparison_task_list = []
+        task_list_for_comparing_dates = []
         for t in task_data:
              task_components = t.split(";")
-             date_comparison_task_list.append(task_components)
+             task_list_for_comparing_dates.append(task_components)
         total_task_count = 0
         completed_tasks_count = 0
         incomplete_task_count = 0
@@ -268,7 +264,7 @@ def generate_reports():
           full_completed_tasks_dict = {}
           for f in full_user_list[::2]:
               full_completed_tasks_dict[f] = 0 
-              for e in date_comparison_task_list:
+              for e in task_list_for_comparing_dates:
                if e[5] == 'Yes' and e[0] == f:
                  full_completed_tasks_dict[f] += 1
         with open("tasks.txt", 'r') as task_file:
@@ -278,7 +274,7 @@ def generate_reports():
           full_incomplete_tasks_dict = {}
           for f in full_user_list[::2]:
               full_incomplete_tasks_dict[f] = 0 
-              for e in date_comparison_task_list:
+              for e in task_list_for_comparing_dates:
                   if e[5] == 'No' and e[0] == f:
                       full_incomplete_tasks_dict[f] += 1
         with open("tasks.txt", 'r') as task_file:
@@ -288,7 +284,7 @@ def generate_reports():
           overdue_tasks_dict = {}
           for f in full_user_list[::2]:
             overdue_tasks_dict[f] = 0
-            for e in date_comparison_task_list:
+            for e in task_list_for_comparing_dates:
                 if e[5] == 'No' and e[3] <= e[4] and e[0] == f:
                     overdue_tasks_dict[f] += 1
         with open("User overview.txt", "w") as user_overview_file:
@@ -329,7 +325,7 @@ def generate_reports():
         if not os.path.exists("Task overview.txt"):
          with open("Task overview.txt", "w") as task_overview_file:
           pass
-        for d in date_comparison_task_list:
+        for d in task_list_for_comparing_dates:
             if d[5] == 'No' and d[3] <= d[4]:
                 overdue_task_count += 1
         for f in full_task_list:
