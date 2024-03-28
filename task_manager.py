@@ -84,6 +84,7 @@ def reg_user():
             
 def add_task():
     task_username = input("Name of person assigned to task: ")
+    # Exception for if the user attempts to add a task for a user that is not registered
     if task_username not in username_password.keys():
         print("User does not exist. Please enter a valid username")
 
@@ -143,6 +144,7 @@ def view_mine():
         task_selection_list_for_operation = []
         list_of_assigned_tasks = []
         counter_for_assigned_tasks = 0
+        # For loop - to print out a list of user assigned tasks taken from the text file
         for t in task_list:
             if t['username'] == curr_user:
                 counter_for_assigned_tasks+=1
@@ -160,6 +162,7 @@ def view_mine():
          print(menu)
         else:
             user_selected_option = int(task_selection - int(1))
+            # If else statements - to accept user input for task selection, with exceptions for tasks that are not listed
             if user_selected_option >= len(task_selection_list_for_operation):
                 print("That task does not exist.")
                 exit()
@@ -168,6 +171,7 @@ def view_mine():
              print(task_selection_list_for_operation[user_selected_option])
              print("\n")
              edit_or_complete_input = input("Would you like to edit this task ('e'), or mark as completed ('c')? \n")
+             # Editing tasks
              if edit_or_complete_input.lower() == 'e':
                         with open("tasks.txt", 'r') as task_file:
                               task_data = task_file.read().split("\n") 
@@ -178,6 +182,7 @@ def view_mine():
                                         print("This task has already been completed.")
                                         exit()   
                         username_or_due_date = input("Would you like to change the username ('u') or due date ('d')? ")
+                        # Changing username and writing to task file
                         if username_or_due_date.lower() == 'u':
                          with open("tasks.txt", 'r') as task_file:
                               task_data = task_file.read().split("\n")
@@ -191,6 +196,7 @@ def view_mine():
                              task_list_str = str(t)
                              task_file.write(task_list_str)
                              task_file.write("\n")
+                         # Changing due date and writing to task file 
                          if username_or_due_date == 'd':
                           with open("tasks.txt", 'r') as task_file:
                            task_data = task_file.read().split("\n")
@@ -205,7 +211,7 @@ def view_mine():
                              task_file.write(task_list_str)
                              task_file.write("\n")
                  
-
+             # User selected task is taken from task file, changed to completed and written back to task file
              if edit_or_complete_input.lower() == 'c':
               with open("tasks.txt", 'r') as task_file:
                task_data = task_file.read().split("\n")
@@ -225,9 +231,9 @@ def view_mine():
                              str_joined_tasks = str(joined_tasks)
                              task_file.write(str_joined_tasks)
                              task_file.write("\n")
-            print("\n", "Task completed.")               
-# --------- Function for generating reports ---------
-                             
+              print("\n", "Task completed.")               
+
+# --------- Function for generating reports ---------                         
 def generate_reports():
         with open("tasks.txt", 'r') as task_file:
          task_data = task_file.read().split("\n")
@@ -246,7 +252,7 @@ def generate_reports():
         if not os.path.exists("User overview.txt"):
          with open("User overview.txt", "w") as user_overview_file:
           pass
-        # Reading in and manipulating task data
+        # Reading in 'tasks.txt' and 'user.txt' data and generating user overview report
         with open("user.txt", 'r') as user_file:
          user_data = user_file.read().split("\n")
          joined_users = ";".join(user_data)
@@ -287,6 +293,7 @@ def generate_reports():
             for e in task_list_for_comparing_dates:
                 if e[5] == 'No' and e[3] <= e[4] and e[0] == f:
                     overdue_tasks_dict[f] += 1
+        # User overview report generated
         with open("User overview.txt", "w") as user_overview_file:
          user_overview_file.write(total_users)
          user_overview_file.write("\n")
@@ -336,6 +343,7 @@ def generate_reports():
                  incomplete_task_count += 1
         percentage_of_incomplete_tasks = (incomplete_task_count/total_task_count) * 100
         percentage_of_overdue_tasks = (overdue_task_count/total_task_count) * 100
+        # Task overview report generated
         with open("Task overview.txt", "w") as task_overview_file:
           task_no = (f"Total Tasks: {total_task_count}")
           completed_tasks = (f"Completed Tasks: {completed_tasks_count}")
@@ -427,6 +435,7 @@ e - Exit
         with open("Task overview.txt", 'r') as task_overview_file:
             task_stats = task_overview_file.read().split("\n")
 
+        # Statistics are printed to the user
         print("-----------------------------------")
         print(f"Number of users: \t\t {num_users}")
         print(f"Number of tasks: \t\t {num_tasks}")
